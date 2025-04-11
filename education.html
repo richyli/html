@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>教育主管決策遊戲</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .choice { margin: 10px 0; }
+    button { padding: 10px 20px; border: none; border-radius: 5px; background: #4CAF50; color: white; cursor: pointer; }
+    button:hover { background: #45a049; }
+    .score { font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>教育主管決策遊戲</h1>
+    <div id="game"></div>
+    <div class="score" id="score"></div>
+  </div>
+
+  <script>
+    const stages = [
+      {
+        text: "階段 1：您剛上任，面臨資源分配問題。您會選擇哪種方式？",
+        choices: [
+          { text: "投入科技設備改善教室", points: 3 },
+          { text: "增聘優秀教師", points: 5 },
+          { text: "增加課外活動預算", points: 2 }
+        ]
+      },
+      {
+        text: "階段 2：偏鄉學生學力落後，您會？",
+        choices: [
+          { text: "派教師駐點輔導", points: 5 },
+          { text: "提供線上課程", points: 3 },
+          { text: "鼓勵家長參與教育", points: 4 }
+        ]
+      },
+      {
+        text: "階段 3：學生心理健康引發關注，您會？",
+        choices: [
+          { text: "建立輔導機制", points: 5 },
+          { text: "加強體育課程與休閒活動", points: 3 },
+          { text: "請外部顧問做演講", points: 2 }
+        ]
+      },
+      {
+        text: "階段 4：家長質疑教育成果，您會？",
+        choices: [
+          { text: "強化學習成果評估並公開", points: 4 },
+          { text: "舉辦家長教育日與教師對話", points: 5 },
+          { text: "設計新的學生成就展示活動", points: 3 }
+        ]
+      }
+    ];
+
+    let currentStage = 0;
+    let totalScore = 0;
+
+    function renderStage() {
+      const gameDiv = document.getElementById("game");
+      if (currentStage < stages.length) {
+        const stage = stages[currentStage];
+        let html = `<p>${stage.text}</p>`;
+        stage.choices.forEach((choice, index) => {
+          html += `<div class="choice"><button onclick="choose(${choice.points})">${choice.text}</button></div>`;
+        });
+        gameDiv.innerHTML = html;
+      } else {
+        gameDiv.innerHTML = `<h2>遊戲結束！</h2><p>您的總分是：${totalScore} 分。</p><p>${getFinalResult()}</p>`;
+      }
+    }
+
+    function choose(points) {
+      totalScore += points;
+      currentStage++;
+      renderStage();
+    }
+
+    function getFinalResult() {
+      if (totalScore >= 18) return "您是學生成就的推手，教育品質顯著提升！";
+      if (totalScore >= 12) return "您的政策穩健，學生有穩定成長。";
+      return "您的策略仍需加強，學生成就有限。";
+    }
+
+    renderStage();
+  </script>
+</body>
+</html>
