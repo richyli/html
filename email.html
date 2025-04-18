@@ -4,26 +4,25 @@
     <meta charset="UTF-8" />
     <title>Email Question Flow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- React & Babel CDN -->
+    <!-- React + ReactDOM + Babel -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- TailwindCSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-white text-gray-900">
     <div id="root" class="max-w-3xl mx-auto my-10"></div>
 
     <script type="text/babel">
-
       const { useState } = React;
 
       function EmailSimulationApp() {
-        const [selections, setSelections] = useState({});
+        const [selections, setSelections] = useState([]);
         const [currentEmailIndex, setCurrentEmailIndex] = useState(0);
 
         const handleSelect = (emailId, answer, section) => {
-          setSelections({ [emailId]: { answer, section } });
+          setSelections((prev) => [...prev, { emailId, answer, section }]);
           setCurrentEmailIndex((prev) => prev + 1);
         };
 
@@ -35,7 +34,7 @@
           "Section 5": "This is the content for Section 5.",
           "Section 6": "This is the content for Section 6.",
           "Section 7": "This is the content for Section 7.",
-          "Section 8": "This is the content for Section 8.",
+          "Section 8": "This is the content for Section 8."
         };
 
         const emails = [
@@ -73,10 +72,23 @@
           },
         ];
 
+        const progressPercentage = (currentEmailIndex / emails.length) * 100;
+
         return (
           <div className="p-6 space-y-8">
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
+              <div
+                className="bg-blue-500 h-full transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+
             {currentEmailIndex < emails.length && (
               <div className="border rounded-xl p-4 shadow-md">
+                <div className="mb-2 text-sm text-gray-600">
+                  Step {currentEmailIndex + 1} of {emails.length}
+                </div>
                 <h2 className="text-lg font-semibold mb-2">
                   {emails[currentEmailIndex].id.toUpperCase()}
                 </h2>
@@ -85,7 +97,9 @@
                   {emails[currentEmailIndex].answers.map((ans, i) => (
                     <button
                       key={i}
-                      onClick={() => handleSelect(emails[currentEmailIndex].id, ans.label, ans.section)}
+                      onClick={() =>
+                        handleSelect(emails[currentEmailIndex].id, ans.label, ans.section)
+                      }
                       className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                       {ans.label}
@@ -95,12 +109,12 @@
               </div>
             )}
 
-            {Object.values(selections).length === 1 && (
+            {selections.length > 0 && currentEmailIndex <= emails.length && (
               <div className="mt-4 p-3 bg-gray-100 rounded">
                 <h3 className="font-semibold">
-                  {Object.values(selections)[0].section}
+                  {selections[selections.length - 1].section}
                 </h3>
-                <p>{sectionContents[Object.values(selections)[0].section]}</p>
+                <p>{sectionContents[selections[selections.length - 1].section]}</p>
               </div>
             )}
 
@@ -108,9 +122,9 @@
               <div className="border-t pt-4 mt-8">
                 <h2 className="text-xl font-bold mb-4">Final Section</h2>
                 <ul className="list-disc list-inside">
-                  {Object.entries(selections).map(([emailId, data]) => (
-                    <li key={emailId}>
-                      {emailId.toUpperCase()}: {data.answer} → {data.section}
+                  {selections.map((data) => (
+                    <li key={data.emailId}>
+                      {data.emailId.toUpperCase()}: {data.answer} → {data.section}
                     </li>
                   ))}
                 </ul>
@@ -120,9 +134,8 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById(\"root\"));
+      const root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(<EmailSimulationApp />);
-
     </script>
   </body>
 </html>
