@@ -8,13 +8,14 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CDN -->
+    <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-white text-gray-900">
-    <div id="root" class="max-w-3xl mx-auto my-8"></div>
+    <div id="root" class="max-w-3xl mx-auto my-10"></div>
 
     <script type="text/babel">
+
       const { useState } = React;
 
       function EmailSimulationApp() {
@@ -22,7 +23,7 @@
         const [currentEmailIndex, setCurrentEmailIndex] = useState(0);
 
         const handleSelect = (emailId, answer, section) => {
-          setSelections((prev) => ({ ...prev, [emailId]: { answer, section } }));
+          setSelections({ [emailId]: { answer, section } });
           setCurrentEmailIndex((prev) => prev + 1);
         };
 
@@ -74,57 +75,36 @@
 
         return (
           <div className="p-6 space-y-8">
-            {emails.map((email, index) => {
-              if (index > currentEmailIndex) return null;
-
-              return (
-                <div key={email.id} className="border rounded-xl p-4 shadow-md">
-                  {!selections[email.id] ? (
-                    <>
-                      <h2 className="text-lg font-semibold mb-2">{email.id.toUpperCase()}</h2>
-                      <p className="mb-2">{email.question}</p>
-                      <div className="space-x-4 mb-2">
-                        {email.answers.map((ans, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleSelect(email.id, ans.label, ans.section)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                          >
-                            {ans.label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="mt-4 p-3 bg-gray-100 rounded">
-                      <h3 className="font-semibold">{selections[email.id].section}</h3>
-                      <p>{sectionContents[selections[email.id].section]}</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {currentEmailIndex > 0 && (
-              <div className="border-t pt-4 mt-4">
-                <h2 className="text-lg font-bold mb-2">Previous Email Review</h2>
-                <div className="bg-yellow-100 p-4 rounded">
-                  {(() => {
-                    const prevEmail = emails[currentEmailIndex - 1];
-                    const prevData = selections[prevEmail.id];
-                    return (
-                      <div>
-                        <p className="font-medium">{prevEmail.id.toUpperCase()}</p>
-                        <p>Answer: {prevData.answer}</p>
-                        <p>Section: {prevData.section}</p>
-                      </div>
-                    );
-                  })()}
+            {currentEmailIndex < emails.length && (
+              <div className="border rounded-xl p-4 shadow-md">
+                <h2 className="text-lg font-semibold mb-2">
+                  {emails[currentEmailIndex].id.toUpperCase()}
+                </h2>
+                <p className="mb-2">{emails[currentEmailIndex].question}</p>
+                <div className="space-x-4 mb-2">
+                  {emails[currentEmailIndex].answers.map((ans, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSelect(emails[currentEmailIndex].id, ans.label, ans.section)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      {ans.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
 
-            {Object.keys(selections).length === 4 && (
+            {Object.values(selections).length === 1 && (
+              <div className="mt-4 p-3 bg-gray-100 rounded">
+                <h3 className="font-semibold">
+                  {Object.values(selections)[0].section}
+                </h3>
+                <p>{sectionContents[Object.values(selections)[0].section]}</p>
+              </div>
+            )}
+
+            {currentEmailIndex === emails.length && (
               <div className="border-t pt-4 mt-8">
                 <h2 className="text-xl font-bold mb-4">Final Section</h2>
                 <ul className="list-disc list-inside">
@@ -140,8 +120,9 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
+      const root = ReactDOM.createRoot(document.getElementById(\"root\"));
       root.render(<EmailSimulationApp />);
+
     </script>
   </body>
 </html>
