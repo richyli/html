@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>視差滾動影片頁面</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      font-family: sans-serif;
+    }
+
+    .hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .hero video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      transition: opacity 1s ease;
+    }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      color: white;
+      font-size: 3rem;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .content {
+      height: 200vh;
+      background: linear-gradient(#f0f0f0, #e0e0e0);
+      padding: 50px;
+    }
+
+    /* 視差背景 */
+    .parallax {
+      background-image: url('https://source.unsplash.com/1600x900/?nature,forest');
+      height: 100vh;
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <video id="bgVideo" src="movie.mp4" autoplay muted loop playsinline></video>
+    <div class="hero-text">這是影片上方的文字</div>
+  </section>
+
+  <section class="parallax"></section>
+
+  <section class="content">
+    <h2>內文區塊</h2>
+    <p>這裡是主要內容，向下滾動時可以看到視差背景與影片漸淡效果。</p>
+  </section>
+
+  <script>
+    // 滾動時讓影片淡出
+    window.addEventListener('scroll', function () {
+      const video = document.getElementById('bgVideo');
+      const scrollY = window.scrollY;
+      const fadeStart = 0;       // 開始淡出的滾動位置
+      const fadeEnd = 300;       // 淡出完成的滾動位置
+      const opacity = 1 - Math.min(Math.max((scrollY - fadeStart) / (fadeEnd - fadeStart), 0), 1);
+      video.style.opacity = opacity;
+    });
+  </script>
+
+</body>
+</html>
